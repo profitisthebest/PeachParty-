@@ -25,7 +25,7 @@ public:
     
     
     // destructor
-    virtual ~Actor() = 0;
+    virtual ~Actor() {}
     
 private:
     StudentWorld *this_world; // variable to store pointer to which world this actor will belong to
@@ -59,7 +59,7 @@ public:
     void set_ticksToMove(int newTicksToMove);
     
     // destructor
-    virtual ~PlayerAvatar();
+    virtual ~PlayerAvatar() {}
     
 private:
     std::string state;
@@ -87,14 +87,14 @@ class CoinSquare : public Actor
 public:
     // constructor for a CoinSquare
     CoinSquare(StudentWorld *world, int imageID, int startX, int startY) :
-    Actor(world, imageID, startX, startY) {};
+    Actor(world, imageID, startX, startY, right, 1) {};
     
     // public methods
-    virtual void doSomething();
+    virtual void doSomething() {}
     virtual bool isAlive() const {return true;} // coinsquare is always alive
     
     // destructor
-    virtual ~CoinSquare();
+    virtual ~CoinSquare() {}
     
 private:
     // add private data members as needed

@@ -12,8 +12,6 @@
 
 // constructor for Actor and PlayerAvatar is implemented in class declaration
 
-PlayerAvatar::~PlayerAvatar() {}
-
 void PlayerAvatar::setState(std::string newState)
 {
     this->state = newState;
@@ -37,11 +35,11 @@ int PlayerAvatar::findValidWalkingDirection(int currentWalkingDirection, Board b
     int m_x, m_y;
     
     // in this case we need to find if either right or left is available
-    if (currentWalkingDirection == up || currentWalkingDirection == down)
+    if (currentWalkingDirection == up || currentWalkingDirection == GraphObject::down)
     {
         std::queue<int> directionQueue;
-        directionQueue.push(right);
-        directionQueue.push(left);
+        directionQueue.push((int)right);
+        directionQueue.push((int)left);
         for(int i = 0; i < directionQueue.size(); i++)
         {
             getPositionInThisDirection(directionQueue.front(), SPRITE_WIDTH, m_x, m_y);
@@ -57,8 +55,8 @@ int PlayerAvatar::findValidWalkingDirection(int currentWalkingDirection, Board b
     if (currentWalkingDirection == right || currentWalkingDirection == left)
     {
         std::queue<int> directionQueue;
-        directionQueue.push(up);
-        directionQueue.push(down);
+        directionQueue.push((int)up);
+        directionQueue.push((int)down);
         for(int i = 0; i < directionQueue.size(); i++)
         {
             getPositionInThisDirection(directionQueue.front(), SPRITE_WIDTH, m_x, m_y);
@@ -141,4 +139,7 @@ void PlayerAvatar::doSomething()
         }
     }
 }
+
+
+
 
