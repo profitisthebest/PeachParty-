@@ -68,6 +68,7 @@ public:
     void set_walkDirection(int newDirection);
     void set_ticksToMove(int newTicksToMove);
     void setCoins(int newAmount);
+    void setStars(int newAmount);
     
     // destructor
     virtual ~PlayerAvatar() {}
@@ -168,7 +169,20 @@ class EventSquare : public ActivateOnPlayer
 
 class StarSquare : public ActivateOnPlayer
 {
+public:
+    // constructor for a Star Square
+    StarSquare(StudentWorld *world, int imageID, int startX, int startY, bool activate_when_lands, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size) {}
     
+    // public methods
+    virtual void doSomething();
+    void starSquareFunctionality(StudentWorld* world, PlayerAvatar* player);
+    virtual bool isAlive() const {return true;} //  star squares are always active
+    virtual bool is_a_square() const {return true;} // star square is a type of square
+    virtual bool can_be_hit_by_vortex() const {return false;} // star squares can not be hit by a vortex
+    
+    // destructor for a Star Square
+    virtual ~StarSquare() {}
+
 };
 
 

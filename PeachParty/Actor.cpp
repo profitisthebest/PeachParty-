@@ -13,6 +13,12 @@
 
 // =====================/* PLAYER AVATAR METHODS */==============================================
 
+void PlayerAvatar::setStars(int newAmount)
+{
+    this->stars = newAmount;
+    return;
+}
+
 void PlayerAvatar::setCoins(int newAmount)
 {
     this->coins = newAmount;
@@ -207,9 +213,63 @@ void CoinSquare::doSomething()
 }
         
         
+// =====================/* STARSQUARE METHODS */==============================================
+
         
+void StarSquare::starSquareFunctionality(StudentWorld* world, PlayerAvatar* player)
+{
+    if (player->getCoins() < 20)
+        return;
+    else
+    {
+        // deduct 20 coins from the player
+        int newAmount = player->getCoins() - 20;
+        player->setCoins(newAmount);
         
+        // give 1 star to the player
+        newAmount = player->getStars() + 1;
+        player->setStars(newAmount);
         
+        // play the sound
+        world->playSound(SOUND_GIVE_STAR);
+        
+    }
+}
+
+void StarSquare::doSomething()
+{
+    StudentWorld* world = this->get_thisWorld();
+    
+    // check if a new peach has landed on the square OR passed over the square
+    PlayerAvatar* peachPlayer = world->getPlayer(1);
+    int peachX = peachPlayer->getX();
+    int peachY = peachPlayer->getY();
+    if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->justLanded()) // if peach just LANDED on star square
+    {
+        starSquareFunctionality(world, peachPlayer);
+    }
+    // peach is moving over the square (currently in the walking state) star square activates
+    if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->getState() == "walking")
+    {
+        starSquareFunctionality(world, peachPlayer);
+    }
+    
+    
+    // check if a new yoshi has landed on the square OR passed over the square
+    PlayerAvatar* yoshiPlayer = world->getPlayer(2);
+    int yoshiX = yoshiPlayer->getX();
+    int yoshiY = yoshiPlayer->getY();
+    if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->justLanded()) // if yoshi just LANDED on star square
+    {
+        starSquareFunctionality(world, yoshiPlayer);
+    }
+    
+    // yoshi is moving over the square (currently in the walking state) star square activates
+    if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->getState() == "walking")
+    {
+        starSquareFunctionality(world, yoshiPlayer);
+    }
+}
 
 
 

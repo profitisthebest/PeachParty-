@@ -121,6 +121,8 @@ int StudentWorld::init()
                     case Board::star_square:
                     {
                         // PART 2
+                        my_actors.push_back(new StarSquare(this, IID_STAR_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, false, 0, 1, 1));
+                        my_numberOfActors++;
                         break;
                     }
                     case Board::bowser:
