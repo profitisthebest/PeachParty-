@@ -4,6 +4,7 @@
 #include "Board.h"
 #include <string>
 #include <list>
+#include <iostream>
 using namespace std;
 
 GameWorld* createStudentWorld(string assetPath)
@@ -130,13 +131,23 @@ int StudentWorld::init()
 int StudentWorld::move()
 {
     // Give each actor a chance to do something, incl. Peach and Yoshi
+    if (my_peach->isAlive()) {
+        my_peach->doSomething();
+    }
+    
+    // if (my_yoshi->isAlive()) {
+      //  my_yoshi->doSomething();
+    //}
+
     for(int i = 0; i < my_actors.size(); i++)
     {
          if (my_actors[i]->isAlive()) // if the actor is still alive let it do something
          {
              // tell that actor to do something
+             
              my_actors[i]->doSomething();
          }
+        
         if (!my_actors[i]->isAlive()) // if the actor is dead, remove the actor after each tick
         {
             delete my_actors[i];

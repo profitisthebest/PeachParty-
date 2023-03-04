@@ -2,6 +2,7 @@
 #define ACTOR_H_
 
 #include <string>
+#include <iostream>
 #include "GraphObject.h"
 
 class StudentWorld;
