@@ -7,6 +7,13 @@
 #include <iostream>
 using namespace std;
 
+PlayerAvatar* StudentWorld::getPlayer(int playerID) const
+{
+    if (playerID == 1) return my_peach;
+    if (playerID == 2) return my_yoshi;
+    else return nullptr;
+}
+
 GameWorld* createStudentWorld(string assetPath)
 {
 	return new StudentWorld(assetPath);
@@ -52,25 +59,33 @@ int StudentWorld::init()
                     case Board::player:
                     {
                         // add a Blue Coin Square under the PlayerAvatars
-                        my_actors.push_back(new CoinSquare(this, IID_BLUE_COIN_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT));
+                        // a Blue coin activates when player lands on, not when player moves over
+                        my_actors.push_back(new CoinSquare(this, IID_BLUE_COIN_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, "blue", 0, 1, 1));
                         my_numberOfActors++;
                         
                         // add a Peach
                         my_peach = new PlayerAvatar(this, 1, IID_PEACH, i*SPRITE_WIDTH, j*SPRITE_HEIGHT);
                         my_numberOfActors++;
                         
-                        // for part two come back and add a Yoshi
+                        // add a Yoshi to the world
+                        my_yoshi = new PlayerAvatar(this, 2, IID_YOSHI, i*SPRITE_WIDTH, j*SPRITE_HEIGHT);
+                        my_numberOfActors++;
+                        
                     }
                     case Board::blue_coin_square:
                     {
                         // PART 1
-                        my_actors.push_back(new CoinSquare(this, IID_BLUE_COIN_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT));
+                        // a blue coin activates when player lands on, not when player moves over
+                        my_actors.push_back(new CoinSquare(this, IID_BLUE_COIN_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, "blue", 0, 1, 1));
                         my_numberOfActors++;
                         break;
                     }
                     case Board::red_coin_square:
                     {
                         // PART 2
+                        // a red coin activates when player lands on, not when player moves over
+                        my_actors.push_back(new CoinSquare(this, IID_RED_COIN_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, "red", 0, 1, 1));
+                        my_numberOfActors++;
                         break;
                     }
                     case Board::left_dir_square:
@@ -135,9 +150,9 @@ int StudentWorld::move()
         my_peach->doSomething();
     }
     
-    // if (my_yoshi->isAlive()) {
-      //  my_yoshi->doSomething();
-    //}
+     if (my_yoshi->isAlive()) {
+        my_yoshi->doSomething();
+    }
 
     for(int i = 0; i < my_actors.size(); i++)
     {

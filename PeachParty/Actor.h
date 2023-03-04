@@ -22,6 +22,10 @@ public:
     // public methods
     virtual void doSomething() = 0;
     virtual bool isAlive() const = 0;
+    virtual bool is_a_square() const = 0;
+    virtual bool can_be_hit_by_vortex() const = 0;
+    
+    // public getter functions
     StudentWorld* get_thisWorld() const {return this_world;}
     
     
@@ -33,31 +37,37 @@ private:
 };
 
 
-
-
-// =====================/* LIVING ACTORS (PEACH, YOSHI, BOWSER, BOO) */==========================
+// =====================/* PLAYER AVATAR (PEACH OR YOSHI) */=================================
 
 class PlayerAvatar : public Actor
 {
 public:
     // constructor for a new Player Avatar
-    PlayerAvatar(StudentWorld *world, int p, int imageID, int startX, int startY) :
-    Actor(world, imageID, startX, startY), state("waiting_to_roll"), player(p), walkDirection(right), ticks_to_move(0) {}
+    PlayerAvatar(StudentWorld *world, int p, int imageID, int startX, int startY, int dir = 0, int depth = 0, double size = 1.0)
+    : Actor(world, imageID, startX, startY, dir, depth, size), state("waiting_to_roll"), player(p), walkDirection(right), ticks_to_move(0), coins(0), stars(0), didJustLand(false) {}
     
     // public methods
     virtual void doSomething();
     virtual bool isAlive() const {return true;} // players are always alive
-    std::string getState() const {return state;}
-    void setState(std::string newState);
-    
-    
+    virtual bool is_a_square() const {return false;} // players are not squares
+    virtual bool can_be_hit_by_vortex() const {return false;} // players can not be hit by a vortex
     int findValidWalkingDirection(int currentWalkingDirection, Board b);
-    int getPlayer() const {return player;} // 1 represents Peach and 2 represents Yoshi
-    int get_walkDirection() const {return walkDirection;} //
-    void set_walkDirection(int newDirection);
+    bool justLanded() const {return didJustLand;}
     
+    // public getter functions
+    std::string getState() const {return state;}
+    int getPlayer() const {return player;} // 1 represents Peach and 2 represents Yoshi
+    int get_walkDirection() const {return walkDirection;}
     int get_ticksToMove() const {return ticks_to_move;}
+    
+    int getCoins() const {return coins;} // used to display on status line
+    int getStars() const {return stars;} // used to display on status line
+    
+    // public setter functions
+    void setState(std::string newState);
+    void set_walkDirection(int newDirection);
     void set_ticksToMove(int newTicksToMove);
+    void setCoins(int newAmount);
     
     // destructor
     virtual ~PlayerAvatar() {}
@@ -67,43 +77,125 @@ private:
     int walkDirection;
     int player;
     int ticks_to_move;
-    
-    // add private data memebers as needed and make sure to correctly add public methods to acess them
-    
-};
-
-class Baddies : public Actor
-{
-    // PART 2
+    int coins;
+    int stars;
+    bool didJustLand;
+        
 };
 
 
+// ==================================================================================================================
+// ===============/* ACTIVATING OBJECT (EVERY OTHER ACTOR IN THE GAME BESIDES PLAYER) */==========================
 
-
-// =====================/* COINSQUARES, STAR SQUARES, BANK SQUARES */==========================
-
-
-class CoinSquare : public Actor
+class ActivatingObject : public Actor
 {
 public:
-    // constructor for a CoinSquare
-    CoinSquare(StudentWorld *world, int imageID, int startX, int startY) :
-    Actor(world, imageID, startX, startY, right, 1) {};
+    // constructor for an ActivatingObject Object
+    ActivatingObject(StudentWorld* world, int imageID, int startX, int startY, int dir, int depth, double size)
+    : Actor(world, imageID, startX, startY, dir, depth, size) {}
     
     // public methods
     virtual void doSomething() {}
-    virtual bool isAlive() const {return true;} // coinsquare is always alive
+};
+
+
+// ===============/* ACTIVATES WHEN COMES IN CONTACT WITH PLAYER (All Squares and Baddies) */==========================
+
+class ActivateOnPlayer : public ActivatingObject
+{
+public:
+    // constructor for an ActivateOnPlayer Object
+    ActivateOnPlayer(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int dir, int depth, double size) : ActivatingObject(world, imageID, startX, startY, dir, depth, size), activateWhenLands(activate_when_lands) {}
+    
+    // public methods
+    bool activate_WhenLands() const {return activateWhenLands;}
+    
+private:
+    bool activateWhenLands;
+};
+
+
+// ========================================/* SQUARES */========================================================
+
+class CoinSquare : public ActivateOnPlayer
+{
+public:
+    // constructor for a CoinSquare
+    CoinSquare(StudentWorld *world, int imageID, int startX, int startY, bool activate_when_lands, std::string coinType, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size), type(coinType), active(true) {}
+    
+    // public methods
+    virtual void doSomething();
+    void changePlayerCoins(StudentWorld* world, PlayerAvatar* player);
+    virtual bool isAlive() const {return active;} // coinsquare is NOT always alive, can be destroyed by bowser
+    virtual bool is_a_square() const {return true;} // coinsquare is a type of square
+    virtual bool can_be_hit_by_vortex() const {return false;} // coinsquares can not be hit by a vortex
+    
+    // public getter functions
+    std::string get_coinType() const {return this->type;}
+    
+    // public setter functions
+    void set_status_isAlive(bool status);
     
     // destructor
     virtual ~CoinSquare() {}
     
 private:
     // add private data members as needed
+    std::string type;
+    bool active;
+    
+};
+
+class BankSquare : public ActivateOnPlayer
+{
+    
+};
+
+class DirectionalSquare : public ActivateOnPlayer
+{
+    
+};
+
+class DroppingSquare : public ActivateOnPlayer
+{
+    
+};
+
+class EventSquare : public ActivateOnPlayer
+{
+    
+};
+
+class StarSquare : public ActivateOnPlayer
+{
     
 };
 
 
+// ========================================/* BADDIES */========================================================
 
+class Baddies : public ActivateOnPlayer
+{
+    
+};
+
+class Bowser : public Baddies
+{
+    
+};
+
+class Boo : public Baddies
+{
+    
+};
+
+
+// ========================================/* VORTEX PROJECTILE */========================================================
+
+class Vortex : public ActivatingObject
+{
+    
+};
 
 
 #endif // ACTOR_H_

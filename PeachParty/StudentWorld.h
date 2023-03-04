@@ -18,7 +18,10 @@ public:
     virtual int move();
     virtual void cleanUp();
     virtual ~StudentWorld() {cleanUp();}
+    
+    
     std::string getAssetPath() const {return my_assetPath;}
+    PlayerAvatar* getPlayer(int playerID) const;
     
 private:
     std::vector<Actor*> my_actors;
