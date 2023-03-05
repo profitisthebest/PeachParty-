@@ -53,6 +53,9 @@ public:
     virtual bool can_be_hit_by_vortex() const {return false;} // players can not be hit by a vortex
     int findValidWalkingDirection(int currentWalkingDirection, Board b);
     bool justLanded() const {return didJustLand;}
+    void teleportToRandomSquare(StudentWorld* world);
+    
+    
     
     // public getter functions
     std::string getState() const {return state;}
@@ -69,6 +72,7 @@ public:
     void set_ticksToMove(int newTicksToMove);
     void setCoins(int newAmount);
     void setStars(int newAmount);
+    
     
     // destructor
     virtual ~PlayerAvatar() {}

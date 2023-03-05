@@ -754,6 +754,40 @@
 			<key>uniqueIdentifier</key>
 			<string>57CF1A02-880D-4328-879E-E51490BD9EB6</string>
 		</dict>
+		<key>62DA8643-A070-4C40-B9E9-9A890A843495</key>
+		<dict>
+			<key>className</key>
+			<string>DBGConsoleLog</string>
+			<key>documentTypeString</key>
+			<string>com.apple.dt.IDE.DebuggerLogContentType</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.DebugLog</string>
+			<key>fileName</key>
+			<string>62DA8643-A070-4C40-B9E9-9A890A843495.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>PeachParty project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>PeachParty</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Run PeachParty</string>
+			<key>timeStartedRecording</key>
+			<real>699677304.13021803</real>
+			<key>timeStoppedRecording</key>
+			<real>699677338.06670403</real>
+			<key>title</key>
+			<string>Run PeachParty</string>
+			<key>uniqueIdentifier</key>
+			<string>62DA8643-A070-4C40-B9E9-9A890A843495</string>
+		</dict>
 		<key>68E9BA77-3520-4574-982C-E6FB3569420B</key>
 		<dict>
 			<key>className</key>
@@ -991,6 +1025,40 @@
 			<string>Run PeachParty</string>
 			<key>uniqueIdentifier</key>
 			<string>888BCF69-269D-469D-9CB2-15B501484E34</string>
+		</dict>
+		<key>8A7CFB8D-1667-4DDB-B455-9B12CA2A84AA</key>
+		<dict>
+			<key>className</key>
+			<string>DBGConsoleLog</string>
+			<key>documentTypeString</key>
+			<string>com.apple.dt.IDE.DebuggerLogContentType</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.DebugLog</string>
+			<key>fileName</key>
+			<string>8A7CFB8D-1667-4DDB-B455-9B12CA2A84AA.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>PeachParty project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>PeachParty</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Run PeachParty</string>
+			<key>timeStartedRecording</key>
+			<real>699677357.89739501</real>
+			<key>timeStoppedRecording</key>
+			<real>699677420.28897405</real>
+			<key>title</key>
+			<string>Run PeachParty</string>
+			<key>uniqueIdentifier</key>
+			<string>8A7CFB8D-1667-4DDB-B455-9B12CA2A84AA</string>
 		</dict>
 		<key>8B9F9C44-2434-411D-A430-D8C6BE3AC72D</key>
 		<dict>

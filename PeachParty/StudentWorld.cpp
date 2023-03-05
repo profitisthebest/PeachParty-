@@ -121,7 +121,7 @@ int StudentWorld::init()
                     case Board::event_square:
                     {
                         // PART 2
-                        my_actors.push_back(new EventSquare(this, IID_EVENT_SQUARE, i*SPRITE_WIDTH, i*SPRITE_HEIGHT, true, 0, 1, 1));
+                        my_actors.push_back(new EventSquare(this, IID_EVENT_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, 0, 1, 1));
                         my_numberOfActors++;
                         break;
                     }

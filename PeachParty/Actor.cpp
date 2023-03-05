@@ -43,6 +43,30 @@ void PlayerAvatar::set_ticksToMove(int newTicksToMove)
     return;
 }
 
+void PlayerAvatar::teleportToRandomSquare(StudentWorld* world)
+{
+    Board board;
+    std::string board_file = get_thisWorld()->assetPath() + "board0" + std::to_string(get_thisWorld()->getBoardNumber()) + ".txt";
+    board.loadBoard(board_file);
+    while(true) // keep a loop running so that you can keep finding new random squares until it meets the requirements
+    {
+        int randX_board = randInt(1, 16);
+        int randY_board = randInt(1, 16);
+        // make sure the new square is not the same one that player is currently on and not empty either
+        if((board.getContentsOf(randX_board, randY_board) != Board::empty)
+           && (randX_board*SPRITE_WIDTH != this->getX() && randY_board*SPRITE_HEIGHT != this->getY()))
+        {
+            // move the player to this new square
+            this->moveTo(randX_board*SPRITE_WIDTH, randY_board*SPRITE_HEIGHT);
+            
+            // UPDATE THE JUST LANDED STATUS SO THE PLAYER ACTIVATES WHATEVER SQUARE IT IS ON
+            this->didJustLand = true;
+            
+            return; // exit the loop & function once the teleportation is complete
+        }
+    }
+}
+
 int PlayerAvatar::findValidWalkingDirection(int currentWalkingDirection, Board b)
 {
     int m_x, m_y;
@@ -401,7 +425,11 @@ void BankSquare::doSomething()
 
 void EventSquare::eventSquareFunctionalityTeleportation(StudentWorld* world, PlayerAvatar* player)
 {
+    // teleport the player to a random square
+    player->teleportToRandomSquare(world);
     
+    // play sound
+    world->playSound(SOUND_PLAYER_TELEPORT);
 }
 
 void EventSquare::eventSquareFunctionalitySwap(StudentWorld* world, PlayerAvatar* player)
@@ -416,18 +444,48 @@ void EventSquare::eventSquareFunctionalityVortex(StudentWorld* world, PlayerAvat
 
 void EventSquare::doSomething()
 {
-    // StudentWorld* world = this->get_thisWorld();
+    StudentWorld* world = this->get_thisWorld();
     
+    // check if a new peach has landed on the square
+    PlayerAvatar* peachPlayer = world->getPlayer(1);
+    int peachX = peachPlayer->getX();
+    int peachY = peachPlayer->getY();
+    if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->justLanded()) // if peach just LANDED on event square
+    {
+        int rand = randInt(1, 3);
+        switch (rand)
+        {
+            case 1:
+                eventSquareFunctionalityTeleportation(world, peachPlayer);
+                break;
+            case 2:
+                eventSquareFunctionalitySwap(world, peachPlayer);
+                break;
+            case 3:
+                eventSquareFunctionalityVortex(world, peachPlayer);
+        }
+    }
     
-    
-    
-    
-    
+    // check if a new yoshi has landed on the square
+    PlayerAvatar* yoshiPlayer = world->getPlayer(2);
+    int yoshiX = yoshiPlayer->getX();
+    int yoshiY = yoshiPlayer->getY();
+    if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->justLanded()) // if yoshi just LANDED on event square
+    {
+        int rand = randInt(1, 3);
+        switch (rand)
+        {
+            case 1:
+                eventSquareFunctionalityTeleportation(world, yoshiPlayer);
+                break;
+            case 2:
+                eventSquareFunctionalitySwap(world, yoshiPlayer);
+                break;
+            case 3:
+                eventSquareFunctionalityVortex(world, yoshiPlayer);
+        }
+    }
 }
-
-
-
-
 
 
 // =====================/* DROPPING SQUARE METHODS */==============================================
