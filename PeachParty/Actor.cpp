@@ -106,8 +106,36 @@ int PlayerAvatar::findValidWalkingDirection(int currentWalkingDirection, Board b
 void PlayerAvatar::doSomething()
 {
     this->didJustLand = false;
+    
     if (this->getState() == "waiting_to_roll")
     {
+        // do a check for if the player has an invalid walking direction (can occur after being teleported
+        if (this->getX()%16==0 && this->getY()%16==0)
+        {
+            Board board;
+            std::string board_file = get_thisWorld()->assetPath() + "board0" + std::to_string(get_thisWorld()->getBoardNumber()) + ".txt";
+            board.loadBoard(board_file);
+            int nextX = 0, nextY = 0;
+            getPositionInThisDirection(get_walkDirection(), SPRITE_WIDTH, nextX, nextY);
+            if (board.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) == Board::empty)
+            {
+                // want to find a valid walking direction: findValidWalkingDirection(get_WalkDirection(), board);
+                // set the walk direction to this new valid walking direction
+                // then check if the new valid walking direction is left, if it is update the sprite direction to left
+                // in all other cases the sprite direction should be right
+                int m_newDirection = findValidWalkingDirection(get_walkDirection(), board);
+                set_walkDirection(m_newDirection);
+                if (m_newDirection == left)
+                {
+                    this->setDirection(left);
+                }
+                else
+                {
+                    this->setDirection(right);
+                }
+            }
+        }
+        
         int action = get_thisWorld()->getAction(this->getPlayer());
         
         if (action == ACTION_ROLL)
@@ -129,7 +157,12 @@ void PlayerAvatar::doSomething()
     
     if(this->getState() == "walking")
     {
-        /* part 2 stuff goes here */
+        // functionality for if the character is at a fork in the road
+        
+        
+        
+        
+        
         
         
         // if the avatar can not keep moving forward in the current direction, only do this check if the actor is directly on a square (16a, 16b)
