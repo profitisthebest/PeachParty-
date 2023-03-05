@@ -28,6 +28,7 @@ StudentWorld::StudentWorld(string assetPath)
     my_numberOfActors = 0;
     my_peach = nullptr;
     my_yoshi = nullptr;
+    centralBankOfCoins = 0;
 }
 
 int StudentWorld::init()
@@ -91,31 +92,44 @@ int StudentWorld::init()
                     case Board::left_dir_square:
                     {
                         // PART 2
+                        // left directional square activates when a player lands on, OR passes over
+                        my_actors.push_back(new DirectionalSquare(this, IID_DIR_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, false, GraphObject::left, 1, 1));
+                        my_numberOfActors++;
                         break;
                     }
                     case Board::right_dir_square:
                     {
                         // PART 2
+                        my_actors.push_back(new DirectionalSquare(this, IID_DIR_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, false, GraphObject::right, 1, 1));
+                        my_numberOfActors++;
                         break;
                     }
                     case Board::up_dir_square:
                     {
                         // PART 2
+                        my_actors.push_back(new DirectionalSquare(this, IID_DIR_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, false, GraphObject::up, 1, 1));
+                        my_numberOfActors++;
                         break;
                     }
                     case Board::down_dir_square:
                     {
                         // PART 2
+                        my_actors.push_back(new DirectionalSquare(this, IID_DIR_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, false, GraphObject::down, 1, 1));
+                        my_numberOfActors++;
                         break;
                     }
                     case Board::event_square:
                     {
                         // PART 2
+                        my_actors.push_back(new EventSquare(this, IID_EVENT_SQUARE, i*SPRITE_WIDTH, i*SPRITE_HEIGHT, true, 0, 1, 1));
+                        my_numberOfActors++;
                         break;
                     }
                     case Board::bank_square:
                     {
                         // PART 2
+                        my_actors.push_back(new BankSquare(this, IID_BANK_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, false, 0, 1, 1));
+                        my_numberOfActors++;
                         break;
                     }
                     case Board::star_square:

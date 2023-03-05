@@ -19,6 +19,11 @@ public:
     virtual void cleanUp();
     virtual ~StudentWorld() {cleanUp();}
     
+    // controlling the central bank
+    int get_bank_coins() const {return centralBankOfCoins;}
+    void deposit_bank_coins(int amountToDeposit) {centralBankOfCoins += amountToDeposit;}
+    void reset_bank_coins() {centralBankOfCoins = 0;}
+    
     
     std::string getAssetPath() const {return my_assetPath;}
     PlayerAvatar* getPlayer(int playerID) const;
@@ -29,6 +34,7 @@ private:
     PlayerAvatar* my_yoshi;
     std::string my_assetPath;
     int my_numberOfActors;
+    int centralBankOfCoins;
     
 };
 

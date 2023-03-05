@@ -126,7 +126,7 @@ public:
     
     // public methods
     virtual void doSomething();
-    void changePlayerCoins(StudentWorld* world, PlayerAvatar* player);
+    void coinSquareFunctionality(StudentWorld* world, PlayerAvatar* player);
     virtual bool isAlive() const {return active;} // coinsquare is NOT always alive, can be destroyed by bowser
     virtual bool is_a_square() const {return true;} // coinsquare is a type of square
     virtual bool can_be_hit_by_vortex() const {return false;} // coinsquares can not be hit by a vortex
@@ -149,22 +149,81 @@ private:
 
 class BankSquare : public ActivateOnPlayer
 {
+public:
+    // constructor for a Banksquare
+    BankSquare(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size) {}
+    
+    // public methods
+    virtual void doSomething();
+    void bankSquareFunctionalityLands(StudentWorld* world, PlayerAvatar* player); // bank gives coins to player
+    void bankSquareFunctionalityPasses(StudentWorld* world, PlayerAvatar* player); // bank takes coins from player
+    virtual bool isAlive() const {return true;} // bank square is always alive
+    virtual bool is_a_square() const {return true;} // bank square is a type of square
+    virtual bool can_be_hit_by_vortex() const {return false;} // bank squares can not be hit by a vortex
+    
+    // destructor for a BankSquare
+    virtual ~BankSquare() {}
     
 };
 
 class DirectionalSquare : public ActivateOnPlayer
 {
+public:
+    // constructor for a DirectionalSquare
+    DirectionalSquare(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size), directionOfSquare(dir) {}
     
+    // public methods
+    virtual void doSomething();
+    void directionSquareFunctionality(PlayerAvatar* player);
+    virtual bool isAlive() const {return true;} // direction square is always alive
+    virtual bool is_a_square() const {return true;} // direction square is a type of square
+    virtual bool can_be_hit_by_vortex() const {return false;} // direction squares can not be hit by a vortex
+    
+    // public getter functions
+    int get_directionOfSquare() const {return directionOfSquare;}
+    
+    // destructor for a directional Square
+    virtual ~DirectionalSquare() {}
+private:
+    int directionOfSquare;
 };
 
 class DroppingSquare : public ActivateOnPlayer
 {
+public:
+    // constructor for a Dropping Square
+    DroppingSquare(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size) {}
     
+    // public methods
+    virtual void doSomething();
+    void droppingSquareFunctionalityDeductCoins(StudentWorld* world, PlayerAvatar* player);
+    void droppingSquareFunctionalityDeductStars(StudentWorld* world, PlayerAvatar* player);
+    virtual bool isAlive() const {return true;} // direction square is always alive
+    virtual bool is_a_square() const {return true;} // direction square is a type of square
+    virtual bool can_be_hit_by_vortex() const {return false;} // direction squares can not be hit by a vortex
+    
+    // destructor for a dropping square
+    virtual ~DroppingSquare() {}
 };
 
 class EventSquare : public ActivateOnPlayer
 {
+public:
+    // constructor for an Event Square
+    EventSquare(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size) {}
     
+    // public methods
+    virtual void doSomething();
+    void eventSquareFunctionalityTeleportation(StudentWorld* world, PlayerAvatar* player);
+    void eventSquareFunctionalitySwap(StudentWorld* world, PlayerAvatar* player);
+    void eventSquareFunctionalityVortex(StudentWorld* world, PlayerAvatar* player);
+    virtual bool isAlive() const {return true;} //  event squares are always active
+    virtual bool is_a_square() const {return true;} // event square is a type of square
+    virtual bool can_be_hit_by_vortex() const {return false;} // event squares can not be hit by a vortex
+    
+    
+    // destructor for an Event Square
+    virtual ~EventSquare() {}
 };
 
 class StarSquare : public ActivateOnPlayer

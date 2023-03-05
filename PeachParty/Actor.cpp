@@ -161,7 +161,7 @@ void CoinSquare::set_status_isAlive(bool status)
     return;
 }
 
-void CoinSquare::changePlayerCoins(StudentWorld* world, PlayerAvatar* player)
+void CoinSquare::coinSquareFunctionality(StudentWorld* world, PlayerAvatar* player)
 {
     if (this->get_coinType() == "blue") // if the coin is a blue coin square we want to give the peach 3 coins
     {
@@ -199,7 +199,7 @@ void CoinSquare::doSomething()
     int peachY = peachPlayer->getY();
     if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->justLanded()) // the peach player is exactly on top of the coinsquare and it just landed on the coin square
     {
-        changePlayerCoins(world, peachPlayer);
+        coinSquareFunctionality(world, peachPlayer);
     }
         
     // check if a new yoshi landed on the square
@@ -208,7 +208,7 @@ void CoinSquare::doSomething()
     int yoshiY = yoshiPlayer->getY();
     if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->justLanded()) // the yoshi player is exactly on top of the coinsquare and it just landed on the coin square
     {
-        changePlayerCoins(world, yoshiPlayer);
+        coinSquareFunctionality(world, yoshiPlayer);
     }
 }
         
@@ -271,7 +271,178 @@ void StarSquare::doSomething()
     }
 }
 
+// =====================/* DIRECTIONAL SQUARE METHODS */==============================================
+
+void DirectionalSquare::directionSquareFunctionality(PlayerAvatar *player)
+{
+    int newDirection = this->get_directionOfSquare();
+    player->set_walkDirection(newDirection);
+}
+
+void DirectionalSquare::doSomething()
+{
+    StudentWorld* world = this->get_thisWorld();
+    
+    
+    // check if a new peach has landed on the square OR passed over the square
+    PlayerAvatar* peachPlayer = world->getPlayer(1);
+    int peachX = peachPlayer->getX();
+    int peachY = peachPlayer->getY();
+    if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->justLanded()) // if peach just LANDED on direction square
+    {
+        directionSquareFunctionality(peachPlayer);
+    }
+    // peach is moving over the square (currently in the walking state) direction square activates
+    if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->getState() == "walking")
+    {
+        directionSquareFunctionality(peachPlayer);
+    }
+    
+
+    // check if a new yoshi has landed on the square OR passed over the square
+    PlayerAvatar* yoshiPlayer = world->getPlayer(2);
+    int yoshiX = yoshiPlayer->getX();
+    int yoshiY = yoshiPlayer->getY();
+    if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->justLanded()) // if yoshi just LANDED on direction square
+    {
+        directionSquareFunctionality(yoshiPlayer);
+    }
+    // yoshi is moving over the square (currently in the walking state) direction square activates
+    if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->getState() == "walking")
+    {
+        directionSquareFunctionality(yoshiPlayer);
+    }
+}
+
+
+// =====================/* BANK SQUARE METHODS */==============================================
+
+
+void BankSquare::bankSquareFunctionalityLands(StudentWorld *world, PlayerAvatar *player)
+{
+    int amountToGivePlayer = world->get_bank_coins();
+    
+    // give the player the amount of coins that is in the bank
+    int newAmount = player->getCoins() + amountToGivePlayer;
+    player->setCoins(newAmount);
+    
+    // reset the central bank balance to zero
+    world->reset_bank_coins();
+    
+    // play sound
+    world->playSound(SOUND_WITHDRAW_BANK);
+}
+
+void BankSquare::bankSquareFunctionalityPasses(StudentWorld *world, PlayerAvatar *player)
+{
+    if (player->getCoins() < 5) // if the player has less than 5 coins then take what you can and deposit into the bank
+    {
+        // deposit into the bank how ever many coins
+        world->deposit_bank_coins(player->getCoins());
+        
+        // take those coins away from the player
+        player->setCoins(0);
+        
+        // play sound
+        world->playSound(SOUND_DEPOSIT_BANK);
+    }
+    else // the player has more than 5 coins
+    {
+        // deposit 5 coins into the bank
+        world->deposit_bank_coins(5);
+        
+        // take 5 coins away from the player
+        int newAmount = player->getCoins() - 5;
+        player->setCoins(newAmount);
+        
+        // play sound
+        world->playSound(SOUND_DEPOSIT_BANK);
+    }
+}
+
+void BankSquare::doSomething()
+{
+    StudentWorld* world = this->get_thisWorld();
+    
+    
+    // check if a new peach has landed on the square OR passed over the square
+    PlayerAvatar* peachPlayer = world->getPlayer(1);
+    int peachX = peachPlayer->getX();
+    int peachY = peachPlayer->getY();
+    if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->justLanded()) // if peach just LANDED on bank square
+    {
+        bankSquareFunctionalityLands(world, peachPlayer);
+    }
+    // peach is moving over the square (currently in the walking state) bank square activates
+    if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->getState() == "walking")
+    {
+        bankSquareFunctionalityPasses(world, peachPlayer);
+    }
+    
+    
+    // check if a new yoshi has landed on the square OR passed over the square
+    PlayerAvatar* yoshiPlayer = world->getPlayer(2);
+    int yoshiX = yoshiPlayer->getX();
+    int yoshiY = yoshiPlayer->getY();
+    if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->justLanded()) // if yoshi just LANDED on bank square
+    {
+        bankSquareFunctionalityLands(world, yoshiPlayer);
+    }
+    // yoshi is moving over the square (currently in the walking state) bank square activates
+    if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->getState() == "walking")
+    {
+        bankSquareFunctionalityLands(world, yoshiPlayer);
+    }
+    
+}
+
+
+// =====================/* EVENT SQUARE METHODS */==============================================
+
+void EventSquare::eventSquareFunctionalityTeleportation(StudentWorld* world, PlayerAvatar* player)
+{
+    
+}
+
+void EventSquare::eventSquareFunctionalitySwap(StudentWorld* world, PlayerAvatar* player)
+{
+    
+}
+
+void EventSquare::eventSquareFunctionalityVortex(StudentWorld* world, PlayerAvatar* player)
+{
+    
+}
+
+void EventSquare::doSomething()
+{
+    // StudentWorld* world = this->get_thisWorld();
+    
+    
+    
+    
+    
+    
+}
 
 
 
 
+
+
+// =====================/* DROPPING SQUARE METHODS */==============================================
+
+void DroppingSquare::droppingSquareFunctionalityDeductCoins(StudentWorld *world, PlayerAvatar *player)
+{
+    
+}
+
+void DroppingSquare::droppingSquareFunctionalityDeductStars(StudentWorld *world, PlayerAvatar *player)
+{
+    
+}
+
+void DroppingSquare::doSomething()
+{
+    
+}
