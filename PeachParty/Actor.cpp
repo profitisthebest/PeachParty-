@@ -245,8 +245,8 @@ void PlayerAvatar::doSomething()
         
         if (action == ACTION_ROLL)
         {
-            int die_roll = randInt(1, 10);
-            set_ticksToMove(die_roll*8);
+            this->die_roll = randInt(1, 10);
+            set_ticksToMove(this->die_roll*8);
             setState("walking");
         }
         if (action == ACTION_FIRE)
@@ -261,6 +261,7 @@ void PlayerAvatar::doSomething()
     
     if(this->getState() == "walking")
     {
+            
         std::set<int> validDirections;
         validDirections.clear();
         // functionality for if the character is at a fork in the road (only check when an actor is directly on a square) && not still in starting square && the square currently on is not a directional square
@@ -344,6 +345,7 @@ void PlayerAvatar::doSomething()
         // decrement ticks_to_move by 1
         int z = get_ticksToMove() - 1;
         set_ticksToMove(z);
+        if (ticks_to_move%8==0) this->die_roll--;
         
         // check if you should change state
         if (get_ticksToMove() == 0)

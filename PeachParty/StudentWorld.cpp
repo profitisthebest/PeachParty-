@@ -4,6 +4,9 @@
 #include "Board.h"
 #include <string>
 #include <list>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -182,7 +185,6 @@ int StudentWorld::move()
          if (my_actors[i]->isAlive()) // if the actor is still alive let it do something
          {
              // tell that actor to do something
-             
              my_actors[i]->doSomething();
          }
         
@@ -195,7 +197,71 @@ int StudentWorld::move()
     }
     
     // Update the Game Status Line at the top of the screen (PART 2)
-
+    ostringstream oss;
+    oss.fill(' ');
+    oss << "P1 Roll:";
+    if (my_peach->get_dice() == 10)
+        oss << setw(3) << my_peach->get_dice();
+    else
+        oss << setw(2) << my_peach->get_dice();
+    
+    oss << " Stars:";
+    if (my_peach->getStars() >= 10)
+        oss << setw(3) << my_peach->getStars();
+    else
+        oss << setw(2) << my_peach->getStars();
+    
+    oss << " $$:";
+    if (my_peach->getCoins() >= 100)
+        oss << setw(4) << my_peach->getCoins();
+    else if (my_peach->getCoins() >= 10)
+        oss << setw(3) << my_peach->getCoins();
+    else // get coins less than 10
+        oss << setw(2) << my_peach->getCoins();
+    
+    if (my_peach->hasAVortex())
+        oss << setw(4) << "VOR";
+    
+    oss << " | Time:";
+    if (timeRemaining() >= 10)
+        oss << setw(3) << timeRemaining();
+    else
+        oss << setw(2) << timeRemaining();
+    
+    oss << " | Bank:";
+    if (get_bank_coins() >= 100)
+        oss << setw(4) << get_bank_coins();
+    else if (get_bank_coins() >= 10)
+        oss << setw(3) << get_bank_coins();
+    else // get coins less than 10
+        oss << setw(2) << get_bank_coins();
+    
+    oss << " | P2 Roll:";
+    if (my_yoshi->get_dice() == 10)
+        oss << setw(3) << my_yoshi->get_dice();
+    else
+        oss << setw(2) << my_yoshi->get_dice();
+    
+    oss << " Stars:";
+    if (my_yoshi->getStars() >= 10)
+        oss << setw(3) << my_yoshi->getStars();
+    else
+        oss << setw(2) << my_yoshi->getStars();
+    
+    oss << " $$:";
+    if (my_yoshi->getCoins() >= 100)
+        oss << setw(4) << my_yoshi->getCoins();
+    else if (my_yoshi->getCoins() >= 10)
+        oss << setw(3) << my_yoshi->getCoins();
+    else // get coins less than 10
+        oss << setw(2) << my_yoshi->getCoins();
+    
+    if (my_yoshi->hasAVortex())
+        oss << setw(4) << "VOR";
+    
+    
+    std::string text = oss.str();
+    setGameStatText(text);
     
     if (timeRemaining() <= 0)
     {
@@ -211,15 +277,10 @@ void StudentWorld::cleanUp()
 {
     for(int i = 0; i < my_actors.size(); i++)
     {
-        delete my_actors[i];
+        if (my_actors[i] != nullptr)
+            delete my_actors[i];
     }
-    if (my_peach != nullptr)
-    {
-        delete my_peach;
-    }
-    if (my_yoshi != nullptr)
-    {
-        delete my_yoshi;
-    }
+    delete my_peach;
+    delete my_yoshi;
     my_actors.clear();
 }

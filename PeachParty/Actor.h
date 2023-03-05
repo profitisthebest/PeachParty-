@@ -45,7 +45,7 @@ class PlayerAvatar : public Actor
 public:
     // constructor for a new Player Avatar
     PlayerAvatar(StudentWorld *world, int p, int imageID, int startX, int startY, int dir = 0, int depth = 0, double size = 1.0)
-    : Actor(world, imageID, startX, startY, dir, depth, size), state("waiting_to_roll"), player(p), walkDirection(right), ticks_to_move(0), coins(0), stars(0), didJustLand(false), still_InStart(true), hasVortex(false) {}
+    : Actor(world, imageID, startX, startY, dir, depth, size), state("waiting_to_roll"), player(p), walkDirection(right), ticks_to_move(0), coins(0), stars(0), didJustLand(false), still_InStart(true), hasVortex(false), die_roll(0) {}
     
     // public methods
     virtual void doSomething();
@@ -69,6 +69,7 @@ public:
     int get_walkDirection() const {return walkDirection;}
     int get_ticksToMove() const {return ticks_to_move;}
     
+    int get_dice() const {return die_roll;} // used to display on status line
     int getCoins() const {return coins;} // used to display on status line
     int getStars() const {return stars;} // used to display on status line
     
@@ -94,6 +95,7 @@ private:
     bool didJustLand;
     bool still_InStart;
     bool hasVortex;
+    int die_roll;
         
 };
 
