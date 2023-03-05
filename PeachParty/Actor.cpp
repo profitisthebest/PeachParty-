@@ -8,11 +8,16 @@
 #include <string>
 #include <queue>
 #include <set>
-#include <iostream>
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
 
 // =====================/* PLAYER AVATAR METHODS */==============================================
+
+void PlayerAvatar::set_hasAVortex(int newStatus)
+{
+    this->hasVortex = newStatus;
+    return;
+}
 
 void PlayerAvatar::setStars(int newAmount)
 {
@@ -42,6 +47,58 @@ void PlayerAvatar::set_ticksToMove(int newTicksToMove)
 {
     this->ticks_to_move = newTicksToMove;
     return;
+}
+
+void PlayerAvatar::swap_coins(PlayerAvatar *other)
+{
+    int thisPlayerCoins = this->getCoins();
+    this->setCoins(other->getCoins());
+    other->setCoins(thisPlayerCoins);
+    return;
+}
+
+void PlayerAvatar::swap_stars(PlayerAvatar *other)
+{
+    int thisPlayerStars = this->getStars();
+    this->setStars(other->getStars());
+    other->setStars(thisPlayerStars);
+    return;
+}
+
+void PlayerAvatar::swap_positions(PlayerAvatar *other)
+{
+    // swaps position, current ticks_to_move, roll/walk state, walk direction, sprite direction with other player
+    
+    // ticks to move swap
+    int ticks_to_move_temp = this->get_ticksToMove();
+    this->set_ticksToMove(other->get_ticksToMove());
+    other->set_ticksToMove(ticks_to_move_temp);
+    
+    // position swap
+    int this_X_temp = this->getX(), this_Y_temp = this->getY();
+    this->moveTo(other->getX(), other->getY());
+    other->moveTo(this_X_temp, this_Y_temp);
+    
+    // roll/walk state swap
+    std::string this_state_temp = this->getState();
+    this->setState(other->getState());
+    other->setState(this_state_temp);
+    
+    // walk direction swap
+    int this_walkDirection_temp = this->get_walkDirection();
+    this->set_walkDirection(other->get_walkDirection());
+    other->set_walkDirection(this_walkDirection_temp);
+    
+    // swap sprite direction
+    int this_spriteDirection_temp = this->getDirection();
+    this->setDirection(other->getDirection());
+    other->setDirection(this_spriteDirection_temp);
+}
+
+void PlayerAvatar::equip_with_vortex_projectile()
+{
+    // make sure to set hasAVortex to true after equipping
+    // make sure to set hasAVortex to false after firing
 }
 
 void PlayerAvatar::teleportToRandomSquare(StudentWorld* world)
@@ -561,12 +618,27 @@ void EventSquare::eventSquareFunctionalityTeleportation(StudentWorld* world, Pla
 
 void EventSquare::eventSquareFunctionalitySwap(StudentWorld* world, PlayerAvatar* player)
 {
+    // get other player
+    PlayerAvatar* other = world->get_other_player(player);
     
+    // swap coins and stars
+    player->swap_coins(other);
+    player->swap_stars(other);
+    
+    // swap positions, movement state and directions (swapped character must not activate the event square upon landing)
+    player->swap_positions(other);
+    
+    // play sound
+    world->playSound(SOUND_PLAYER_TELEPORT);
 }
 
 void EventSquare::eventSquareFunctionalityVortex(StudentWorld* world, PlayerAvatar* player)
 {
+    if (!player->hasAVortex())
+        player->equip_with_vortex_projectile();
     
+    // play the sound regardless
+    world->playSound(SOUND_GIVE_VORTEX);
 }
 
 void EventSquare::doSomething()

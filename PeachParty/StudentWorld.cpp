@@ -4,13 +4,20 @@
 #include "Board.h"
 #include <string>
 #include <list>
-#include <iostream>
+
 using namespace std;
 
 PlayerAvatar* StudentWorld::getPlayer(int playerID) const
 {
     if (playerID == 1) return my_peach;
     if (playerID == 2) return my_yoshi;
+    else return nullptr;
+}
+
+PlayerAvatar* StudentWorld::get_other_player(PlayerAvatar* currentPlayer) const
+{
+    if (currentPlayer == my_peach) return my_yoshi;
+    if (currentPlayer == my_yoshi) return my_peach;
     else return nullptr;
 }
 

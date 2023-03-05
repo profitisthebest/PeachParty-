@@ -23,6 +23,7 @@ public:
     int get_bank_coins() const {return centralBankOfCoins;}
     void deposit_bank_coins(int amountToDeposit) {centralBankOfCoins += amountToDeposit;}
     void reset_bank_coins() {centralBankOfCoins = 0;}
+    PlayerAvatar* get_other_player(PlayerAvatar* currentPlayer) const;
     
     
     std::string getAssetPath() const {return my_assetPath;}
