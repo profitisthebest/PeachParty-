@@ -7,6 +7,7 @@
 
 #include <string>
 #include <queue>
+#include <set>
 #include <iostream>
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
@@ -103,18 +104,65 @@ int PlayerAvatar::findValidWalkingDirection(int currentWalkingDirection, Board b
     return 0;
 }
 
+bool PlayerAvatar::isFork(Board b, std::set<int>& validDirections)
+{
+    // check if the player is currently at a fork and store valid directions to move into the set
+    int nextX = 0, nextY = 0;
+    // check right
+    getPositionInThisDirection(right, SPRITE_WIDTH, nextX, nextY);
+    if (b.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) != Board::empty)
+    {
+        validDirections.insert((int)right);
+    }
+    // check left
+    getPositionInThisDirection(left, SPRITE_WIDTH, nextX, nextY);
+    if (b.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) != Board::empty)
+    {
+        validDirections.insert((int)left);
+    }
+    // check up
+    getPositionInThisDirection(up, SPRITE_WIDTH, nextX, nextY);
+    if (b.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) != Board::empty)
+    {
+        validDirections.insert((int)up);
+    }
+    // check down
+    getPositionInThisDirection(down, SPRITE_WIDTH, nextX, nextY);
+    if (b.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) != Board::empty)
+    {
+        validDirections.insert((int)down);
+    }
+    
+    // make sure to exclude the walking direction that player came from (opposite of the walk direction)
+    if (this->get_walkDirection() == GraphObject::right)
+        validDirections.erase((int)left);
+    if (this->get_walkDirection() == GraphObject::left)
+        validDirections.erase((int)right);
+    if (this->get_walkDirection() == GraphObject::up)
+        validDirections.erase((int)down);
+    if (this->get_walkDirection() == GraphObject::down)
+        validDirections.erase((int)up);
+    
+    
+    if (validDirections.size() >= 2) return true;
+    else return false;
+}
+
+
 void PlayerAvatar::doSomething()
 {
+    // load the board
+    Board board;
+    std::string board_file = get_thisWorld()->assetPath() + "board0" + std::to_string(get_thisWorld()->getBoardNumber()) + ".txt";
+    board.loadBoard(board_file);
+    
     this->didJustLand = false;
     
     if (this->getState() == "waiting_to_roll")
     {
-        // do a check for if the player has an invalid walking direction (can occur after being teleported
+        // do a check for if the player has an invalid walking direction (can occur after being teleported)
         if (this->getX()%16==0 && this->getY()%16==0)
         {
-            Board board;
-            std::string board_file = get_thisWorld()->assetPath() + "board0" + std::to_string(get_thisWorld()->getBoardNumber()) + ".txt";
-            board.loadBoard(board_file);
             int nextX = 0, nextY = 0;
             getPositionInThisDirection(get_walkDirection(), SPRITE_WIDTH, nextX, nextY);
             if (board.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) == Board::empty)
@@ -143,7 +191,6 @@ void PlayerAvatar::doSomething()
             int die_roll = randInt(1, 10);
             set_ticksToMove(die_roll*8);
             setState("walking");
-            
         }
         if (action == ACTION_FIRE)
         {
@@ -157,20 +204,58 @@ void PlayerAvatar::doSomething()
     
     if(this->getState() == "walking")
     {
-        // functionality for if the character is at a fork in the road
-        
-        
-        
-        
-        
-        
-        
+        std::set<int> validDirections;
+        validDirections.clear();
+        // functionality for if the character is at a fork in the road (only check when an actor is directly on a square) && not still in starting square && the square currently on is not a directional square
+        if (this->getX()%16==0 && this->getY()%16==0 && this->isFork(board, validDirections) && !this->stillInStart()
+            && board.getContentsOf(this->getX()/SPRITE_WIDTH, this->getY()/SPRITE_HEIGHT) != Board::up_dir_square
+            && board.getContentsOf(this->getX()/SPRITE_WIDTH, this->getY()/SPRITE_HEIGHT) != Board::down_dir_square
+            && board.getContentsOf(this->getX()/SPRITE_WIDTH, this->getY()/SPRITE_HEIGHT) != Board::left_dir_square
+            && board.getContentsOf(this->getX()/SPRITE_WIDTH, this->getY()/SPRITE_HEIGHT) != Board::right_dir_square)
+        {
+            int action_forFork = get_thisWorld()->getAction(this->getPlayer());
+            switch (action_forFork)
+            {
+                case ACTION_UP:
+                    if (validDirections.find((int)up) != validDirections.end()) // if the user input is a valid dir (it is contained in the set of validDirections)
+                    {
+                        // update the player walk direction
+                        this->set_walkDirection(GraphObject::up);
+                        this->setDirection(right);
+                    }
+                    break;
+                case ACTION_DOWN:
+                    if (validDirections.find((int)down) != validDirections.end())
+                    {
+                        this->set_walkDirection(GraphObject::down);
+                        this->setDirection(right);
+                    }
+                    break;
+                case ACTION_LEFT:
+                    if (validDirections.find((int)left) != validDirections.end())
+                    {
+                        this->set_walkDirection(GraphObject::left);
+                        
+                        // change the sprite direction to face left as well
+                        this->setDirection(GraphObject::left);
+                    }
+                    break;
+                case ACTION_RIGHT:
+                    if (validDirections.find((int)right) != validDirections.end())
+                    {
+                        this->set_walkDirection(GraphObject::right);
+                        this->setDirection(right);
+                    }
+                    break;
+                default: // if the user does not press any of these then we return (prevents avatar from moving on)
+                    return;
+            }
+            
+        }
+
         // if the avatar can not keep moving forward in the current direction, only do this check if the actor is directly on a square (16a, 16b)
         if (this->getX()%16==0 && this->getY()%16==0)
         {
-            Board board;
-            std::string board_file = get_thisWorld()->assetPath() + "board0" + std::to_string(get_thisWorld()->getBoardNumber()) + ".txt";
-            board.loadBoard(board_file);
             int nextX = 0, nextY = 0;
             getPositionInThisDirection(get_walkDirection(), SPRITE_WIDTH, nextX, nextY);
             if (board.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) == Board::empty)
@@ -192,6 +277,9 @@ void PlayerAvatar::doSomething()
                 }
             }
         }
+        
+        still_InStart = false; // after the first move the player is no longer still in start mode
+        // this feature is so that the forking check doesn't activate on the starting position
         
         // move two pixels in the walk direction
         this->moveAtAngle(get_walkDirection(), 2);
@@ -333,6 +421,12 @@ void StarSquare::doSomething()
 void DirectionalSquare::directionSquareFunctionality(PlayerAvatar *player)
 {
     int newDirection = this->get_directionOfSquare();
+    
+    // update sprite directions
+    if (newDirection == GraphObject::left) player->setDirection(left);
+    else player->setDirection(right);
+    
+    // update walk directions
     player->set_walkDirection(newDirection);
 }
 

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <set>
 #include "GraphObject.h"
 
 class StudentWorld;
@@ -44,7 +45,7 @@ class PlayerAvatar : public Actor
 public:
     // constructor for a new Player Avatar
     PlayerAvatar(StudentWorld *world, int p, int imageID, int startX, int startY, int dir = 0, int depth = 0, double size = 1.0)
-    : Actor(world, imageID, startX, startY, dir, depth, size), state("waiting_to_roll"), player(p), walkDirection(right), ticks_to_move(0), coins(0), stars(0), didJustLand(false) {}
+    : Actor(world, imageID, startX, startY, dir, depth, size), state("waiting_to_roll"), player(p), walkDirection(right), ticks_to_move(0), coins(0), stars(0), didJustLand(false), still_InStart(true) {}
     
     // public methods
     virtual void doSomething();
@@ -53,8 +54,10 @@ public:
     virtual bool can_be_hit_by_vortex() const {return false;} // players can not be hit by a vortex
     int findValidWalkingDirection(int currentWalkingDirection, Board b);
     bool justLanded() const {return didJustLand;}
+    bool stillInStart() const {return still_InStart;}
     void teleportToRandomSquare(StudentWorld* world);
     
+    bool isFork(Board b, std::set<int>& validDirections); // returns true if the player has reached a fork, stores valid directions to continue moving in a set passed in
     
     
     // public getter functions
@@ -85,6 +88,7 @@ private:
     int coins;
     int stars;
     bool didJustLand;
+    bool still_InStart;
         
 };
 
