@@ -19,6 +19,10 @@ public:
     virtual void cleanUp();
     virtual ~StudentWorld() {cleanUp();}
     
+    // dropping square functionality
+    void delete_square_at(int toEraseX, int toEraseY);
+    void insert_dropping_square_at(int toInsertX, int toInsertY);
+    
     // controlling the central bank
     int get_bank_coins() const {return centralBankOfCoins;}
     void deposit_bank_coins(int amountToDeposit) {centralBankOfCoins += amountToDeposit;}

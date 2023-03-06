@@ -18,11 +18,12 @@ class Actor : public GraphObject
 public:
     // constructor for an actor
     Actor(StudentWorld *world, int imageID, int startX, int startY, int dir = right, int depth = 0, double size = 1.0) :
-    GraphObject(imageID, startX, startY, dir, depth, size), this_world(world) {};
+    GraphObject(imageID, startX, startY, dir, depth, size), this_world(world), active(true) {};
     
     // public methods
     virtual void doSomething() = 0;
-    virtual bool isAlive() const = 0;
+    virtual bool isAlive() const {return active;}
+    void setInactive() {this->active = false;}
     virtual bool is_a_square() const = 0;
     virtual bool can_be_hit_by_vortex() const = 0;
     
@@ -35,6 +36,7 @@ public:
     
 private:
     StudentWorld *this_world; // variable to store pointer to which world this actor will belong to
+    bool active;
 };
 
 
@@ -113,6 +115,7 @@ public:
     
     // public methods
     virtual void doSomething() {}
+    
 };
 
 
@@ -127,6 +130,7 @@ public:
     // public methods
     bool activate_WhenLands() const {return activateWhenLands;}
     
+    
 private:
     bool activateWhenLands;
 };
@@ -138,12 +142,11 @@ class CoinSquare : public ActivateOnPlayer
 {
 public:
     // constructor for a CoinSquare
-    CoinSquare(StudentWorld *world, int imageID, int startX, int startY, bool activate_when_lands, std::string coinType, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size), type(coinType), active(true) {}
+    CoinSquare(StudentWorld *world, int imageID, int startX, int startY, bool activate_when_lands, std::string coinType, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size), type(coinType) {}
     
     // public methods
     virtual void doSomething();
     void coinSquareFunctionality(StudentWorld* world, PlayerAvatar* player);
-    virtual bool isAlive() const {return active;} // coinsquare is NOT always alive, can be destroyed by bowser
     virtual bool is_a_square() const {return true;} // coinsquare is a type of square
     virtual bool can_be_hit_by_vortex() const {return false;} // coinsquares can not be hit by a vortex
     
@@ -151,7 +154,6 @@ public:
     std::string get_coinType() const {return this->type;}
     
     // public setter functions
-    void set_status_isAlive(bool status);
     
     // destructor
     virtual ~CoinSquare() {}
@@ -159,7 +161,6 @@ public:
 private:
     // add private data members as needed
     std::string type;
-    bool active;
     
 };
 
@@ -173,7 +174,6 @@ public:
     virtual void doSomething();
     void bankSquareFunctionalityLands(StudentWorld* world, PlayerAvatar* player); // bank gives coins to player
     void bankSquareFunctionalityPasses(StudentWorld* world, PlayerAvatar* player); // bank takes coins from player
-    virtual bool isAlive() const {return true;} // bank square is always alive
     virtual bool is_a_square() const {return true;} // bank square is a type of square
     virtual bool can_be_hit_by_vortex() const {return false;} // bank squares can not be hit by a vortex
     
@@ -191,7 +191,6 @@ public:
     // public methods
     virtual void doSomething();
     void directionSquareFunctionality(PlayerAvatar* player);
-    virtual bool isAlive() const {return true;} // direction square is always alive
     virtual bool is_a_square() const {return true;} // direction square is a type of square
     virtual bool can_be_hit_by_vortex() const {return false;} // direction squares can not be hit by a vortex
     
@@ -214,12 +213,12 @@ public:
     virtual void doSomething();
     void droppingSquareFunctionalityDeductCoins(StudentWorld* world, PlayerAvatar* player);
     void droppingSquareFunctionalityDeductStars(StudentWorld* world, PlayerAvatar* player);
-    virtual bool isAlive() const {return true;} // direction square is always alive
     virtual bool is_a_square() const {return true;} // direction square is a type of square
     virtual bool can_be_hit_by_vortex() const {return false;} // direction squares can not be hit by a vortex
     
     // destructor for a dropping square
     virtual ~DroppingSquare() {}
+    
 };
 
 class EventSquare : public ActivateOnPlayer
@@ -233,12 +232,12 @@ public:
     void eventSquareFunctionalityTeleportation(StudentWorld* world, PlayerAvatar* player);
     void eventSquareFunctionalitySwap(StudentWorld* world, PlayerAvatar* player);
     void eventSquareFunctionalityVortex(StudentWorld* world, PlayerAvatar* player);
-    virtual bool isAlive() const {return true;} //  event squares are always active
     virtual bool is_a_square() const {return true;} // event square is a type of square
     virtual bool can_be_hit_by_vortex() const {return false;} // event squares can not be hit by a vortex
     
     // destructor for an Event Square
     virtual ~EventSquare() {}
+
 };
 
 class StarSquare : public ActivateOnPlayer
@@ -250,7 +249,6 @@ public:
     // public methods
     virtual void doSomething();
     void starSquareFunctionality(StudentWorld* world, PlayerAvatar* player);
-    virtual bool isAlive() const {return true;} //  star squares are always active
     virtual bool is_a_square() const {return true;} // star square is a type of square
     virtual bool can_be_hit_by_vortex() const {return false;} // star squares can not be hit by a vortex
     
@@ -264,12 +262,64 @@ public:
 
 class Baddies : public ActivateOnPlayer
 {
+public:
+    // constructor for a Baddie
+    Baddies(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int num_sq_to_move, int number_of_ticks_to_pause, int dir, int depth, double size) : ActivateOnPlayer(world, imageID, startX, startY, activate_when_lands, dir, depth, size), num_sq_to_move(num_sq_to_move), number_of_ticks_to_pause(number_of_ticks_to_pause) {}
     
+    // public methods
+    virtual bool can_be_hit_by_vortex() const {return true;} // baddies can be hit by a vortex
+    virtual bool is_a_square() const {return false;} // baddies are not a type of square
+    virtual bool isAlive() const {return true;}
+    
+    void hit_by_vortex(); // call this when a baddie is hit by a vortex (called by the vortex projectile)
+    bool isFork(Board b, std::set<int>& validDirections); // returns true if the baddie has reached a fork, stores valid directions to continue moving in a set passed in
+
+    
+    // getters and setters
+    int get_num_sq_to_move() const {return num_sq_to_move;}
+    void set_num_sq_to_move(int newValue) {this->num_sq_to_move = newValue; return;}
+    int get_number_of_ticks_to_pause() const {return number_of_ticks_to_pause;}
+    void set_number_of_ticks_to_pause(int newValue) {this->number_of_ticks_to_pause = newValue; return;}
+    int get_ticks_to_move() const {return ticks_to_move;}
+    void set_ticks_to_move(int newValue) {this->ticks_to_move = newValue; return;}
+    
+    int get_walkDirection() const {return walkDirection;}
+    void set_walkDirection(int newDirection) {this->walkDirection = newDirection; return;}
+    
+    // destructor for a baddie
+    virtual ~Baddies() {}
+    
+private:
+    int num_sq_to_move;
+    int number_of_ticks_to_pause;
+    int ticks_to_move;
+    int walkDirection; // leave uninit at first
 };
 
 class Bowser : public Baddies
 {
+public:
+    // constructor for a Bowser
+    Bowser(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int num_sq_to_move, int number_of_ticks_to_pause, int dir, int depth, double size) : Baddies(world, imageID, startX, startY, activate_when_lands, num_sq_to_move, number_of_ticks_to_pause, dir, depth, size), active(true), state("paused") {}
     
+    // public methods
+    virtual void doSomething();
+    virtual bool isAlive() const {return active;}
+    int findValidWalkingDirection(int currentWalkingDireciton, Board b); // finds a RANDOM WALKING DIRECTION THAT IS LEGAL
+    int findValidWalkingDirectionForTurn(int currentWalkingDirection, Board b);
+
+    
+    // public getter methods
+    std::string getState() const {return state;}
+    
+    // public setter methods
+    
+    // destructor for a Bowser
+    virtual ~Bowser() {}
+    
+private:
+    std::string state;
+    bool active;
 };
 
 class Boo : public Baddies

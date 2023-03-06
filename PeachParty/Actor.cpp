@@ -9,6 +9,7 @@
 #include <queue>
 #include <set>
 #include <iostream>
+#include <vector>
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
 
@@ -264,7 +265,7 @@ void PlayerAvatar::doSomething()
         }
     }
     
-    if(this->getState() == "walking")
+    if (this->getState() == "walking")
     {
             
         std::set<int> validDirections;
@@ -361,12 +362,6 @@ void PlayerAvatar::doSomething()
 
 
 // =====================/* COINSQUARE METHODS */==============================================
-
-void CoinSquare::set_status_isAlive(bool status)
-{
-    this->active = status;
-    return;
-}
 
 void CoinSquare::coinSquareFunctionality(StudentWorld* world, PlayerAvatar* player)
 {
@@ -708,3 +703,264 @@ void DroppingSquare::doSomething()
 {
     
 }
+
+
+
+// =====================/* BADDIE  METHODS */==============================================
+
+bool Baddies::isFork(Board b, std::set<int> &validDirections)
+{
+    validDirections.clear();
+    // check if the baddie is currently at a fork and store valid directions to move into the set
+    int nextX = 0, nextY = 0;
+    // check right
+    getPositionInThisDirection(right, SPRITE_WIDTH, nextX, nextY);
+    if (b.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) != Board::empty)
+    {
+        validDirections.insert((int)right);
+    }
+    // check left
+    getPositionInThisDirection(left, SPRITE_WIDTH, nextX, nextY);
+    if (b.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) != Board::empty)
+    {
+        validDirections.insert((int)left);
+    }
+    // check up
+    getPositionInThisDirection(up, SPRITE_WIDTH, nextX, nextY);
+    if (b.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) != Board::empty)
+    {
+        validDirections.insert((int)up);
+    }
+    // check down
+    getPositionInThisDirection(down, SPRITE_WIDTH, nextX, nextY);
+    if (b.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) != Board::empty)
+    {
+        validDirections.insert((int)down);
+    }
+    
+    // make sure to exclude the walking direction that baddie came from (opposite of the walk direction)
+    if (this->get_walkDirection() == GraphObject::right)
+        validDirections.erase((int)left);
+    if (this->get_walkDirection() == GraphObject::left)
+        validDirections.erase((int)right);
+    if (this->get_walkDirection() == GraphObject::up)
+        validDirections.erase((int)down);
+    if (this->get_walkDirection() == GraphObject::down)
+        validDirections.erase((int)up);
+    
+    
+    if (validDirections.size() >= 2) return true;
+    else return false;
+}
+
+
+// =====================/* BOWSER  METHODS */==============================================
+int Bowser::findValidWalkingDirectionForTurn(int currentWalkingDirection, Board b)
+{
+    int m_x, m_y;
+    
+    // in this case we need to find if either right or left is available
+    if (currentWalkingDirection == up || currentWalkingDirection == down)
+    {
+        getPositionInThisDirection(right, SPRITE_WIDTH, m_x, m_y);
+        if (b.getContentsOf(m_x/SPRITE_WIDTH, m_y/SPRITE_HEIGHT) != Board::empty)
+            return right;
+        else
+        {
+            getPositionInThisDirection(left, SPRITE_WIDTH, m_x, m_y);
+            if (b.getContentsOf(m_x/SPRITE_WIDTH, m_y/SPRITE_HEIGHT) != Board::empty)
+                return left;
+        }
+    }
+    
+    // in this case we need to find if either up or down is available
+    if (currentWalkingDirection == right || currentWalkingDirection == left)
+    {
+        getPositionInThisDirection(up, SPRITE_WIDTH, m_x, m_y);
+        if (b.getContentsOf(m_x/SPRITE_WIDTH, m_y/SPRITE_HEIGHT) != Board::empty)
+            return up;
+        else
+        {
+            getPositionInThisDirection(down, SPRITE_WIDTH, m_x, m_y);
+            if (b.getContentsOf(m_x/SPRITE_WIDTH, m_y/SPRITE_HEIGHT) != Board::empty)
+                return down;
+        }
+    }
+    
+    // function will never get to this spot because there will always be somewhere to move
+    return 0;
+}
+
+int Bowser::findValidWalkingDirection(int currentWalkingDirection, Board b)
+{
+    int m_x, m_y;
+    std::vector<int> validDirections;
+    getPositionInThisDirection(right, SPRITE_WIDTH, m_x, m_y);
+    if (b.getContentsOf(m_x/SPRITE_WIDTH, m_y/SPRITE_HEIGHT) != Board::empty)
+        validDirections.push_back((int)right);
+    
+    getPositionInThisDirection(left, SPRITE_WIDTH, m_x, m_y);
+    if (b.getContentsOf(m_x/SPRITE_WIDTH, m_y/SPRITE_HEIGHT) != Board::empty)
+        validDirections.push_back((int)left);
+
+    getPositionInThisDirection(up, SPRITE_WIDTH, m_x, m_y);
+    if (b.getContentsOf(m_x/SPRITE_WIDTH, m_y/SPRITE_HEIGHT) != Board::empty)
+        validDirections.push_back((int)up);
+    
+    getPositionInThisDirection(down, SPRITE_WIDTH, m_x, m_y);
+    if (b.getContentsOf(m_x/SPRITE_WIDTH, m_y/SPRITE_HEIGHT) != Board::empty)
+        validDirections.push_back((int)down);
+    
+    
+    int rand = randInt(0, validDirections.size()-1);
+    
+    // return a random valid direction for bowser to go
+    return validDirections[rand];
+}
+
+void Bowser::doSomething()
+{
+    StudentWorld* world = this->get_thisWorld();
+    PlayerAvatar* m_peach = world->getPlayer(1);
+    PlayerAvatar* m_yoshi = world->getPlayer(2);
+    
+    // load the board
+    Board board;
+    std::string board_file = get_thisWorld()->assetPath() + "board0" + std::to_string(get_thisWorld()->getBoardNumber()) + ".txt";
+    board.loadBoard(board_file);
+    
+    if (this->getState() == "paused")
+    {
+        
+        // check if Bowser and Peach are on the same square and Peach is waiting to roll
+        if (this->getX() == m_peach->getX() && this->getY() == m_peach->getY() && m_peach->getState() == "waiting_to_roll")
+        {
+            // 50% chance that bowser will cause peach to lose all her coins and plays a sound
+            if (randInt(1, 2) == 1)
+            {
+                m_peach->setCoins(0);
+                world->playSound(SOUND_BOWSER_ACTIVATE);
+                // make sure that bowser only activates this once per player avatar per location (might need to add a flag)
+            }
+        }
+        
+        // check if Bowser and Yoshi  are on the same square and Yoshi is waiting to roll
+        // check if Bowser and Peach are on the same square and Peach is waiting to roll
+        if (this->getX() == m_yoshi->getX() && this->getY() == m_yoshi->getY() && m_yoshi->getState() == "waiting_to_roll")
+        {
+            // 50% chance that bowser will cause peach to lose all her coins and plays a sound
+            if (randInt(1, 2) == 1)
+            {
+                m_yoshi->setCoins(0);
+                world->playSound(SOUND_BOWSER_ACTIVATE);
+                // make sure that bowser only activates this once per player avatar per location (might need to add a flag)
+            }
+        }
+        
+        // decrement the pause counter
+        int temp = this->get_number_of_ticks_to_pause() - 1;
+        this->set_number_of_ticks_to_pause(temp);
+        
+        // if the pause counter reaches zero
+        if (this->get_number_of_ticks_to_pause() == 0)
+        {
+            this->set_num_sq_to_move(randInt(1, 10));
+            this->set_ticks_to_move(this->get_num_sq_to_move()*8);
+            
+            // pick a new direction that is legal for bowser to move
+            int newDirection = this->findValidWalkingDirection(this->get_walkDirection(), board);
+            this->set_walkDirection(newDirection);
+            if (newDirection == left) // update sprite direction as well
+                this->setDirection(left);
+            else
+                this->setDirection(right);
+            
+            // set state to walking
+            this->state = "walking";
+        }
+    }
+    
+    if (this->getState() == "walking")
+    {
+        
+        std::set<int> validDirections;
+        // functionality for if the bowser is currently at a fork (pick a random new valid direction)
+        if (this->getX()%16==0 && this->getY()%16==0 && this->isFork(board, validDirections))
+        {
+            // pick a new random direction for bowser to move
+            std::vector<int> randDirectionforBowser;
+            if (validDirections.find((int)right) != validDirections.end()) // right is a valid direction
+                randDirectionforBowser.push_back((int)right);
+            if (validDirections.find((int)left) != validDirections.end()) // right is a valid direction
+                randDirectionforBowser.push_back((int)left);
+            if (validDirections.find((int)up) != validDirections.end()) // right is a valid direction
+                randDirectionforBowser.push_back((int)up);
+            if (validDirections.find((int)down) != validDirections.end()) // right is a valid direction
+                randDirectionforBowser.push_back((int)down);
+            
+            int tempVectorIndex = randInt(0, randDirectionforBowser.size()-1);
+            int newDirection = randDirectionforBowser[tempVectorIndex];
+            this->set_walkDirection(newDirection);
+            if (newDirection == left) // update sprite direction as well
+                this->setDirection(left);
+            else
+                this->setDirection(right);
+        }
+        
+        // FOR TURNS
+        // if the BOWSER can not keep moving forward in the current direction, only do this check if the BOWSER is directly on a square (16a, 16b)
+        if (this->getX()%16==0 && this->getY()%16==0)
+        {
+            int nextX = 0, nextY = 0;
+            getPositionInThisDirection(get_walkDirection(), SPRITE_WIDTH, nextX, nextY);
+            if (board.getContentsOf(nextX/SPRITE_WIDTH, nextY/SPRITE_HEIGHT) == Board::empty)
+            {
+                // want to find a valid walking direction: findValidWalkingDirection(get_WalkDirection(), board);
+                // set the walk direction to this new valid walking direction
+                // then check if the new valid walking direction is left, if it is update the sprite direction to left
+                // in all other cases the sprite direction should be right
+                int m_newDirection = findValidWalkingDirectionForTurn(this->get_walkDirection(), board);
+                set_walkDirection(m_newDirection);
+                if (m_newDirection == left)
+                {
+                    this->setDirection(left);
+                }
+                else
+                {
+                    this->setDirection(right);
+                }
+            }
+        }
+
+        // move two pixels in the walk direction
+        this->moveAtAngle(get_walkDirection(), 2);
+        
+        // decrement ticks_to_move by 1
+        int z = get_ticks_to_move() - 1;
+        set_ticks_to_move(z);
+        
+        // check if you should change state
+        if (get_ticks_to_move() == 0)
+        {
+            this->state = "paused";
+            set_number_of_ticks_to_pause(180);
+            // 25% chance to have a dropping square beneath bowser
+            int k = randInt(1, 4);
+            if (k == 1)
+            {
+                // ask StudentWorld to delete the square underneath bowser
+                // insert a new dropping square underneath
+                world->delete_square_at(this->getX(), this->getY());
+                world->insert_dropping_square_at(this->getX(), this->getY());
+                
+                // play sound
+                world->playSound(SOUND_DROPPING_SQUARE_CREATED);
+            }
+            
+            
+        }
+        
+    }
+    
+}
+

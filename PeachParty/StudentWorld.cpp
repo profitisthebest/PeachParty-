@@ -41,6 +41,25 @@ StudentWorld::StudentWorld(string assetPath)
     centralBankOfCoins = 0;
 }
 
+void StudentWorld::delete_square_at(int toEraseX, int toEraseY)
+{
+    // want to check if there is a square at the position passed in and then delete it
+    for(int i = 0; i<my_actors.size(); i++)
+    {
+        if (my_actors[i]->getX() == toEraseX && my_actors[i]->getY() == toEraseY && my_actors[i]->is_a_square())
+        {
+            my_actors[i]->setInactive();
+        }
+    }
+}
+
+void StudentWorld::insert_dropping_square_at(int toInsertX, int toInsertY)
+{
+    // want to insert a dropping square at the passed in x and y
+    my_actors.push_back(new DroppingSquare(this, IID_DROPPING_SQUARE, toInsertX, toInsertY, true, 0, 1, 1));
+    my_numberOfActors++;
+}
+
 int StudentWorld::init()
 {
     // load board data
@@ -152,11 +171,20 @@ int StudentWorld::init()
                     case Board::bowser:
                     {
                         // PART 2
+                        my_actors.push_back(new CoinSquare(this, IID_BLUE_COIN_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, "blue", 0, 1, 1));
+                        
+                        my_actors.push_back(new Bowser(this, IID_BOWSER, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, 0, 180, 0, 0, 1));
+                        my_numberOfActors += 2;
                         break;
                     }
                     case Board::boo:
                     {
                         // PART 2
+                        my_actors.push_back(new CoinSquare(this, IID_BLUE_COIN_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, "blue", 0, 1, 1));
+                        
+                        // add a boo
+                        
+                        my_numberOfActors+=2;
                         break;
                     }
                 }
