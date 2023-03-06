@@ -691,17 +691,61 @@ void EventSquare::doSomething()
 
 void DroppingSquare::droppingSquareFunctionalityDeductCoins(StudentWorld *world, PlayerAvatar *player)
 {
-    
+    if (player->getCoins() <= 10)
+    {
+        player->setCoins(0);
+    }
+    else
+    {
+        int newAmount = player->getCoins() - 10;
+        player->setCoins(newAmount);
+    }
 }
 
 void DroppingSquare::droppingSquareFunctionalityDeductStars(StudentWorld *world, PlayerAvatar *player)
 {
-    
+    if (player->getStars() >= 1)
+    {
+        int newAmount = player->getStars() - 1;
+        player->setStars(newAmount);
+    }
 }
 
 void DroppingSquare::doSomething()
 {
+    StudentWorld* world = this->get_thisWorld();
     
+    // check if a new peach has landed on the square
+    PlayerAvatar* peachPlayer = world->getPlayer(1);
+    int peachX = peachPlayer->getX();
+    int peachY = peachPlayer->getY();
+    if ((peachX == this->getX() && peachY == this->getY()) && peachPlayer->justLanded()) // if peach just LANDED on dropping square
+    {
+        int r = randInt(1, 2);
+        if (r==1)
+            droppingSquareFunctionalityDeductCoins(world, peachPlayer);
+        else
+            droppingSquareFunctionalityDeductStars(world, peachPlayer);
+        
+        // play the sound
+        world->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
+    }
+    
+    // check if a new yoshi has landed on the square
+    PlayerAvatar* yoshiPlayer = world->getPlayer(2);
+    int yoshiX = yoshiPlayer->getX();
+    int yoshiY = yoshiPlayer->getY();
+    if ((yoshiX == this->getX() && yoshiY == this->getY()) && yoshiPlayer->justLanded()) // if yoshi just LANDED on dropping square
+    {
+        int r = randInt(1, 2);
+        if (r==1)
+            droppingSquareFunctionalityDeductCoins(world, yoshiPlayer);
+        else
+            droppingSquareFunctionalityDeductStars(world, yoshiPlayer);
+        
+        // play the sound
+        world->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
+    }
 }
 
 

@@ -294,8 +294,44 @@ int StudentWorld::move()
     if (timeRemaining() <= 0)
     {
         playSound(SOUND_GAME_FINISHED);
-        return GWSTATUS_PEACH_WON;
         // PART 2: add logic for winner between yoshi and peach
+        if (my_peach->getStars() > my_yoshi->getStars()) // peach won
+        {
+            setFinalScore(my_peach->getStars(), my_peach->getCoins());
+            return GWSTATUS_PEACH_WON;
+        }
+        else if (my_yoshi->getStars() > my_peach->getStars()) // yoshi won
+        {
+            setFinalScore(my_yoshi->getStars(), my_yoshi->getStars());
+            return GWSTATUS_YOSHI_WON;
+        }
+        else // tie of stars
+        {
+            if (my_peach->getCoins() > my_yoshi->getCoins()) // peach won
+            {
+                setFinalScore(my_peach->getStars(), my_peach->getCoins());
+                return GWSTATUS_PEACH_WON;
+            }
+            else if (my_yoshi->getCoins() > my_peach->getCoins()) // yoshi won
+            {
+                setFinalScore(my_yoshi->getStars(), my_yoshi->getStars());
+                return GWSTATUS_YOSHI_WON;
+            }
+            else // both stars and coins are tied so pick random winner
+            {
+                int r = randInt(1, 2);
+                if (r == 1) // peach wins
+                {
+                    setFinalScore(my_peach->getStars(), my_peach->getCoins());
+                    return GWSTATUS_PEACH_WON;
+                }
+                else // yoshi wins
+                {
+                    setFinalScore(my_yoshi->getStars(), my_yoshi->getStars());
+                    return GWSTATUS_YOSHI_WON;
+                }
+            }
+        }
     }
     // the game isn't over yet so continue playing
     return GWSTATUS_CONTINUE_GAME;
