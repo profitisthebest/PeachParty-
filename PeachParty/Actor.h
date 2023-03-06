@@ -300,11 +300,10 @@ class Bowser : public Baddies
 {
 public:
     // constructor for a Bowser
-    Bowser(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int num_sq_to_move, int number_of_ticks_to_pause, int dir, int depth, double size) : Baddies(world, imageID, startX, startY, activate_when_lands, num_sq_to_move, number_of_ticks_to_pause, dir, depth, size), active(true), state("paused") {}
+    Bowser(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int num_sq_to_move, int number_of_ticks_to_pause, int dir, int depth, double size) : Baddies(world, imageID, startX, startY, activate_when_lands, num_sq_to_move, number_of_ticks_to_pause, dir, depth, size), state("paused") {}
     
     // public methods
     virtual void doSomething();
-    virtual bool isAlive() const {return active;}
     int findValidWalkingDirection(int currentWalkingDireciton, Board b); // finds a RANDOM WALKING DIRECTION THAT IS LEGAL
     int findValidWalkingDirectionForTurn(int currentWalkingDirection, Board b);
 
@@ -319,12 +318,29 @@ public:
     
 private:
     std::string state;
-    bool active;
 };
 
 class Boo : public Baddies
 {
+public:
+    // constructor for Boo
+    Boo(StudentWorld* world, int imageID, int startX, int startY, bool activate_when_lands, int num_sq_to_move, int number_of_ticks_to_pause, int dir, int depth, double size) : Baddies(world, imageID, startX, startY, activate_when_lands, num_sq_to_move, number_of_ticks_to_pause, dir, depth, size), state("paused") {}
     
+    // public methods
+    virtual void doSomething();
+    void booFunctionalityCoins(StudentWorld* world, PlayerAvatar* thisPlayer);
+    void booFunctionalityStars(StudentWorld* world, PlayerAvatar* thisPlayer);
+    int findValidWalkingDirection(int currentWalkingDireciton, Board b); // finds a RANDOM WALKING DIRECTION THAT IS LEGAL
+    int findValidWalkingDirectionForTurn(int currentWalkingDirection, Board b);
+    
+    // public getter methods
+    std::string getState() const {return state;}
+    
+    // destructor for a Bowser
+    virtual ~Boo() {}
+    
+private:
+    std::string state;
 };
 
 

@@ -183,7 +183,7 @@ int StudentWorld::init()
                         my_actors.push_back(new CoinSquare(this, IID_BLUE_COIN_SQUARE, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, "blue", 0, 1, 1));
                         
                         // add a boo
-                        
+                        my_actors.push_back(new Boo(this, IID_BOO, i*SPRITE_WIDTH, j*SPRITE_HEIGHT, true, 0, 180, 0, 0, 1));
                         my_numberOfActors+=2;
                         break;
                     }

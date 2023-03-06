@@ -45,6 +45,7 @@
 		4B91F8C52034176C003AFA78 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		4B91F8C720341775003AFA78 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		4BDD1225299A1704000721B8 /* Board.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Board.h; sourceTree = "<group>"; };
+		A155D4B929B5B6ED001D50FE /* report.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = report.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +94,7 @@
 				4B91F8BC2033F3F7003AFA78 /* SpriteManager.h */,
 				4B91F8B22033F3F7003AFA78 /* StudentWorld.cpp */,
 				4B91F8BE2033F3F8003AFA78 /* StudentWorld.h */,
+				A155D4B929B5B6ED001D50FE /* report.txt */,
 			);
 			path = PeachParty;
 			sourceTree = "<group>";
