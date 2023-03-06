@@ -45,7 +45,7 @@ class PlayerAvatar : public Actor
 public:
     // constructor for a new Player Avatar
     PlayerAvatar(StudentWorld *world, int p, int imageID, int startX, int startY, int dir = 0, int depth = 0, double size = 1.0)
-    : Actor(world, imageID, startX, startY, dir, depth, size), state("waiting_to_roll"), player(p), walkDirection(right), ticks_to_move(0), coins(0), stars(0), didJustLand(false), still_InStart(true), hasVortex(false), die_roll(0) {}
+    : Actor(world, imageID, startX, startY, dir, depth, size), state("waiting_to_roll"), player(p), walkDirection(right), ticks_to_move(0), coins(0), stars(0), didJustLand(false), didJustTeleport(false), still_InStart(true), hasVortex(false), die_roll(0) {}
     
     // public methods
     virtual void doSomething();
@@ -55,6 +55,7 @@ public:
     bool hasAVortex() const {return hasVortex;}
     int findValidWalkingDirection(int currentWalkingDirection, Board b);
     bool justLanded() const {return didJustLand;}
+    bool justTeleported() const {return didJustTeleport;}
     bool stillInStart() const {return still_InStart;}
     void teleportToRandomSquare(StudentWorld* world);
     bool isFork(Board b, std::set<int>& validDirections); // returns true if the player has reached a fork, stores valid directions to continue moving in a set passed in
@@ -81,7 +82,6 @@ public:
     void setStars(int newAmount);
     void set_hasAVortex(int newStatus);
     
-    
     // destructor
     virtual ~PlayerAvatar() {}
     
@@ -93,6 +93,7 @@ private:
     int coins;
     int stars;
     bool didJustLand;
+    bool didJustTeleport;
     bool still_InStart;
     bool hasVortex;
     int die_roll;

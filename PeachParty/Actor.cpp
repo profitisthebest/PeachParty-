@@ -8,6 +8,7 @@
 #include <string>
 #include <queue>
 #include <set>
+#include <iostream>
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
 
@@ -119,6 +120,7 @@ void PlayerAvatar::teleportToRandomSquare(StudentWorld* world)
             
             // UPDATE THE JUST LANDED STATUS SO THE PLAYER ACTIVATES WHATEVER SQUARE IT IS ON
             this->didJustLand = true;
+            this->didJustTeleport = true;
             
             return; // exit the loop & function once the teleportation is complete
         }
@@ -163,6 +165,7 @@ int PlayerAvatar::findValidWalkingDirection(int currentWalkingDirection, Board b
 
 bool PlayerAvatar::isFork(Board b, std::set<int>& validDirections)
 {
+    validDirections.clear();
     // check if the player is currently at a fork and store valid directions to move into the set
     int nextX = 0, nextY = 0;
     // check right
@@ -218,7 +221,7 @@ void PlayerAvatar::doSomething()
     if (this->getState() == "waiting_to_roll")
     {
         // do a check for if the player has an invalid walking direction (can occur after being teleported)
-        if (this->getX()%16==0 && this->getY()%16==0)
+        if (this->getX()%16==0 && this->getY()%16==0 && this->justTeleported())
         {
             int nextX = 0, nextY = 0;
             getPositionInThisDirection(get_walkDirection(), SPRITE_WIDTH, nextX, nextY);
@@ -240,6 +243,8 @@ void PlayerAvatar::doSomething()
                 }
             }
         }
+        
+        this->didJustTeleport = false;
         
         int action = get_thisWorld()->getAction(this->getPlayer());
         
@@ -263,7 +268,6 @@ void PlayerAvatar::doSomething()
     {
             
         std::set<int> validDirections;
-        validDirections.clear();
         // functionality for if the character is at a fork in the road (only check when an actor is directly on a square) && not still in starting square && the square currently on is not a directional square
         if (this->getX()%16==0 && this->getY()%16==0 && this->isFork(board, validDirections) && !this->stillInStart()
             && board.getContentsOf(this->getX()/SPRITE_WIDTH, this->getY()/SPRITE_HEIGHT) != Board::up_dir_square
@@ -322,7 +326,6 @@ void PlayerAvatar::doSomething()
                 // set the walk direction to this new valid walking direction
                 // then check if the new valid walking direction is left, if it is update the sprite direction to left
                 // in all other cases the sprite direction should be right
-                
                 int m_newDirection = findValidWalkingDirection(get_walkDirection(), board);
                 set_walkDirection(m_newDirection);
                 if (m_newDirection == left)
