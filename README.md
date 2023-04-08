@@ -1,2 +1,2 @@
 # PeachParty
-was responsible for implementing game logic
+responsible for implementing game logic
